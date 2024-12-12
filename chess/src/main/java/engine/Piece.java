@@ -15,6 +15,7 @@ public abstract class Piece {
 
 public class Pawn extends Piece{
 
+
 }
 
 public class Rook extends Piece{
