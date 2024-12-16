@@ -6,8 +6,9 @@ public abstract class Piece {
     private PlayerColor color;
     private ChessGame chessGame;
 
-    protected Piece () {
-        
+    public Piece (PlayerColor color, ChessGame chessGame) {
+        this.color=color;
+        this.chessGame=chessGame;
     }
 
     public Move[] availableMoves(){
@@ -17,4 +18,8 @@ public abstract class Piece {
     public PlayerColor getColor(){
         return null;
     }
+
+    private Move[] getMovesInDirection(){
+        return null;
+    };
 }
