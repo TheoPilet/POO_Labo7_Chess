@@ -1,4 +1,4 @@
-package engine;
+package engine.utils;
 
 public class Position {
     public final int x;
