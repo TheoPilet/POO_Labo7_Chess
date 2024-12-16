@@ -1,6 +1,5 @@
 package engine;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import chess.ChessController;
@@ -21,6 +20,8 @@ public class ChessGame implements ChessController {
 	private final int HEIGHT = 10;
 	private Piece[][] board = new Piece[WIDTH][HEIGHT];
 
+	private LinkedList<Move> history = new LinkedList<>();
+
 	@Override
 	public void start(ChessView view) {
 		this.view = view;
@@ -33,7 +34,7 @@ public class ChessGame implements ChessController {
 		return false; // TODO
 	}
 
-		@Override
+	@Override
 	public void newGame() {
 		resetBoard();
 		initializeBoard();
@@ -56,7 +57,7 @@ public class ChessGame implements ChessController {
 		&& p.y >= 0
 		&& p.y < HEIGHT;
 	}
-	
+
 	private void initializeBoard () {
 	PlayerColor white = PlayerColor.WHITE;
 		PlayerColor black = PlayerColor.BLACK;
