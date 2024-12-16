@@ -32,6 +32,16 @@ public class ChessGame implements ChessController {
     view.putPiece(PieceType.KING, PlayerColor.BLACK, 3, 4); // TODO exemple uniquement
   }
 
+  /**
+   * Look at a position on the chess board, and get the Piece if there is one.
+   * @param p the position on the board we inspect
+   * @return null if there is no pieces at this position, the Piece if there is one.
+   */
+  public Piece at(Position p) {
+    if (!isOnBoard(p)) return null;
+    return board[p.x][p.y];
+  }
+
   public boolean isOnBoard (Position p) {
     return p.x >= 0 
       && p.x < WIDTH 
