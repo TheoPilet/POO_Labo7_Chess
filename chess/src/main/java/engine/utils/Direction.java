@@ -1,4 +1,4 @@
-package engine;
+package engine.utils;
 
 public enum Direction {
     UP(0, 1),
