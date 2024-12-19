@@ -1,6 +1,7 @@
 package engine;
 
 import chess.PlayerColor;
+import engine.utils.*;
 
 public abstract class Piece {
     private PlayerColor color;
@@ -16,10 +17,26 @@ public abstract class Piece {
     };
 
     public PlayerColor getColor(){
-        return null;
+        return color;
     }
 
-    private Move[] getMovesInDirection(){
+    private boolean hasTheSameColor(Piece piece){
+        return piece.color == this.color;
+    }
+
+    private Move[] getMovesInDirection(Direction d, int limit, Position from, int tour){
+
+        boolean canGoFurther = true;
+
+        Position pos = new Position(0, 0);
+        //tant que limite est pas atteinte ou que pièce bloquante -> pièce à soi
+        for(int i = 0; canGoFurther; pos.x+=d.dx, pos.y+=d.dy, i++){
+            if(i == limit || hasTheSameColor(chessGame.at(pos))){
+                canGoFurther = false;
+                break;
+            }
+            
+        }
         return null;
     };
 }
