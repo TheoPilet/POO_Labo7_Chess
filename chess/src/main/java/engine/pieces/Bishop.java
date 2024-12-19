@@ -1,10 +1,9 @@
 package engine.pieces;
 
+import chess.PieceType;
 import chess.PlayerColor;
 import engine.ChessGame;
-import engine.Move;
 import engine.Piece;
-import engine.utils.*;
 
 public class Bishop extends Piece {
     
@@ -12,5 +11,8 @@ public class Bishop extends Piece {
         super(color, chessGame);
     }
 
+    public PieceType getType(){
+        return PieceType.BISHOP;
+    }
     
 }

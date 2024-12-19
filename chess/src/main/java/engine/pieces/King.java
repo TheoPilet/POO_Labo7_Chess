@@ -1,5 +1,6 @@
 package engine.pieces;
 
+import chess.PieceType;
 import chess.PlayerColor;
 import engine.ChessGame;
 import engine.Piece;
@@ -13,5 +14,9 @@ public class King extends Piece {
         super(color, chessGame);
         this.rook1 = rook1;
         this.rook2 = rook2;
+    }
+
+    public PieceType getType(){
+        return PieceType.KING;
     }
 }

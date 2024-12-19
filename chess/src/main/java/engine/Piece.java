@@ -1,5 +1,6 @@
 package engine;
 
+import chess.PieceType;
 import chess.PlayerColor;
 import engine.utils.*;
 
@@ -23,6 +24,8 @@ public abstract class Piece {
     private boolean hasTheSameColor(Piece piece){
         return piece.color == this.color;
     }
+
+    public abstract PieceType getType();
 
     private Move[] getMovesInDirection(Direction d, int limit, Position from, int tour){
 
