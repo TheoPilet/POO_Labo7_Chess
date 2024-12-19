@@ -9,6 +9,7 @@ import chess.PlayerColor;
 import engine.pieces.Bishop;
 import engine.pieces.King;
 import engine.pieces.Knight;
+import engine.pieces.Pawn;
 import engine.pieces.Queen;
 import engine.pieces.Rook;
 import engine.utils.Position;
@@ -17,8 +18,8 @@ public class ChessGame implements ChessController {
 
 	private ChessView view;
 
-	private final int WIDTH = 10;
-	private final int HEIGHT = 10;
+	private final int WIDTH = 8;
+	private final int HEIGHT = 8;
 	private Piece[][] board = new Piece[WIDTH][HEIGHT];
 
 	private LinkedList<Move> history = new LinkedList<>();
@@ -50,6 +51,20 @@ public class ChessGame implements ChessController {
 	public Piece at(Position p) {
 		if (!isOnBoard(p)) return null;
 		return board[p.x()][p.y()];
+	}
+
+	/**
+	 * Look for a piece on the board and returns it's location.
+	 * @param p the piece to look for
+	 * @return the position of the piece, and null if it isn't on the board
+	 */
+	public Position where(Piece p) {
+		for (int i = 0; i < WIDTH; ++i) {
+			for (int j = 0; j < HEIGHT; ++j) {
+				if (board[i][j] == p) return new Position(i, j);
+			}
+		}
+		return null;
 	}
 
 	public boolean isOnBoard (Position p) {
@@ -91,9 +106,9 @@ public class ChessGame implements ChessController {
 		));
 
 		for (int x=0, y=0; x < WIDTH; ++x) board[x][y] = whitePieces.pop();
-		for (int x=0, y=1; x < WIDTH; ++x) board[x][y] = new Rook(white, this);
+		for (int x=0, y=1; x < WIDTH; ++x) board[x][y] = new Pawn(white, this);
 		for (int x=0, y=HEIGHT-1; x < WIDTH; ++x) board[x][y] = blackPieces.pop();
-		for (int x=0, y=HEIGHT-2; x < WIDTH; ++x) board[x][y] = new Rook(white, this);
+		for (int x=0, y=HEIGHT-2; x < WIDTH; ++x) board[x][y] = new Pawn(black, this);
 	}
 
 	private void resetBoard() {
@@ -109,7 +124,7 @@ public class ChessGame implements ChessController {
 		for (int x=0; x < WIDTH; ++x) {
 			for (int y=0; y < HEIGHT; ++y) {
 				Piece p = board[x][y];
-				view.putPiece(p.getType(), p.getColor(), x, y);
+				if (p != null) view.putPiece(p.getType(), p.getColor(), x, y);
 			}
 		}
 	}
