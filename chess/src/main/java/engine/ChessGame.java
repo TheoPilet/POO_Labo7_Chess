@@ -24,6 +24,9 @@ public class ChessGame implements ChessController {
 
 	private LinkedList<Move> history = new LinkedList<>();
 
+	private Piece whiteKing;
+	private Piece blackKing;
+
 	@Override
 	public void start(ChessView view) {
 		this.view = view;
@@ -33,7 +36,65 @@ public class ChessGame implements ChessController {
 	@Override
 	public boolean move(int fromX, int fromY, int toX, int toY) {
 		System.out.println(String.format("TO REMOVE : from (%d, %d) to (%d, %d)", fromX, fromY, toX, toY)); // TODO remove
-		return false; // TODO
+		Piece p = board[fromX][fromY];
+		if (p == null) return false; // no piece to move at the start position
+
+		Position from = new Position(fromX, fromY);
+		Position to = new Position(toX, toY);
+
+		Move move = getMoveIfAllowed(p, from, to);
+		if (move == null) return false;
+
+		applyMove(move);
+		if (!isStateValid()) {
+			revertLastMove();
+			return false;
+		}
+
+		//TODO : check promotion
+
+		uppdateBoardView(move);
+		return true;
+	}
+
+	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
+		for (Move m : p.availableMoves()) {
+			if (m.from.equals(from) && m.to.equals(to)) {
+				return m;
+			}
+		}
+		return null;
+	}
+
+	private void applyMove (Move m) {
+		history.add(m);
+		board[m.to.x()][m.to.y()] = m.pieceMoved;
+		board[m.from.x()][m.from.y()] = null;
+	}
+
+	private void revertLastMove () {
+		Move m = history.pop();
+		revertMove(m);
+	}
+	private void revertMove(Move m) {
+		board[m.from.x()][m.from.y()] = board[m.to.x()][m.to.y()];
+		board[m.to.x()][m.to.y()] = m.pieceEaten;
+		if (m.secondMove != null) revertMove(m.secondMove);
+	}
+
+	private boolean isStateValid() {
+		//TODO: implement
+		return false;
+	}
+
+	public boolean isThreatenend(Position p) {
+		//TODO: implement
+		return false;
+	}
+
+	public boolean hasMoved(Piece p) {
+		//TODO: implement
+		return false;
 	}
 
 	@Override
@@ -83,11 +144,14 @@ public class ChessGame implements ChessController {
 		Rook br1 = new Rook(black, this);
 		Rook br2 = new Rook(black, this);
 
+		whiteKing = new King(white, this, r1, r2);
+		blackKing = new King(black, this, br1, br2);
+
 		LinkedList<Piece> whitePieces = new LinkedList<>(Arrays.asList(
 			r1,
 			new Knight(white, this),
 			new Bishop(white, this),
-			new King(white, this, r1, r2),
+			whiteKing,
 			new Queen(white, this),
 			new Bishop(white, this),
 			new Knight(white, this),
@@ -98,7 +162,7 @@ public class ChessGame implements ChessController {
 			br1,
 			new Knight(black, this),
 			new Bishop(black, this),
-			new King(black, this, br1, br2),
+			blackKing,
 			new Queen(black, this),
 			new Bishop(black, this),
 			new Knight(black, this),
@@ -127,5 +191,11 @@ public class ChessGame implements ChessController {
 				if (p != null) view.putPiece(p.getType(), p.getColor(), x, y);
 			}
 		}
+	}
+
+	private void uppdateBoardView(Move m) {
+		view.removePiece(m.from.x(), m.from.y());
+		if (m.pieceEaten != null) view.removePiece(m.to.x(), m.to.y()); // TODO: necessary ?
+		view.putPiece(m.pieceMoved.getType(), m.pieceMoved.getColor(), m.to.x(), m.to.y());
 	}
 }
