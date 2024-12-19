@@ -1,5 +1,6 @@
 package engine;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import chess.ChessController;
@@ -48,14 +49,14 @@ public class ChessGame implements ChessController {
 	 */
 	public Piece at(Position p) {
 		if (!isOnBoard(p)) return null;
-		return board[p.x][p.y];
+		return board[p.x()][p.y()];
 	}
 
 	public boolean isOnBoard (Position p) {
-		return p.x >= 0 
-		&& p.x < WIDTH 
-		&& p.y >= 0
-		&& p.y < HEIGHT;
+		return p.x() >= 0 
+		&& p.x() < WIDTH 
+		&& p.y() >= 0
+		&& p.y() < HEIGHT;
 	}
 
 	private void initializeBoard () {
