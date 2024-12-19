@@ -30,7 +30,7 @@ public abstract class Piece {
 
         Position pos = new Position(0, 0);
         //tant que limite est pas atteinte ou que pièce bloquante -> pièce à soi
-        for(int i = 0; canGoFurther; pos.x+=d.dx, pos.y+=d.dy, i++){
+        for(int i = 0; canGoFurther; pos.next(d), i++){
             if(i == limit || hasTheSameColor(chessGame.at(pos))){
                 canGoFurther = false;
                 break;
