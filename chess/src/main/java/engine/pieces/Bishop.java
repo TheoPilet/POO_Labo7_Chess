@@ -14,5 +14,7 @@ public class Bishop extends Piece {
     public PieceType getType(){
         return PieceType.BISHOP;
     }
+
+    
     
 }
