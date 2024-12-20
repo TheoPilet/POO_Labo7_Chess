@@ -87,7 +87,11 @@ public class ChessGame implements ChessController {
 	}
 
 	private boolean isStateValid() {
-		return isThreatenend((currentPlayerColor == PlayerColor.WHITE) ? whiteKing : blackKing);
+		return isThreatenend(currentPlayerKing());
+	}
+
+	private Piece currentPlayerKing() {
+		return (currentPlayerColor == PlayerColor.WHITE) ? whiteKing : blackKing;
 	}
 
 	private void nextTurn() {
