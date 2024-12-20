@@ -92,11 +92,13 @@ public class ChessGame implements ChessController {
 
 	private void nextTurn() {
 		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
+		System.out.println("Turn " + history.size() + " (" + currentPlayerColor.name() + " player) : " + history.getLast());
 	}
 
 	public boolean isThreatenend(Piece p) { // TODO: remove if not used
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
+			.filter(piece -> piece != null)
 			.flatMap(piece -> piece.availableMoves().stream())
 			.anyMatch(m -> m.pieceEaten == p);
 	}
@@ -104,6 +106,7 @@ public class ChessGame implements ChessController {
 	public boolean isThreatened(Position p) { // TODO: remove if not used
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
+			.filter(piece -> piece != null)
 			.flatMap(piece -> piece.availableMoves().stream())
 			.anyMatch(m -> m.to.equals(p));
 	}
