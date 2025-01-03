@@ -25,4 +25,9 @@ public class Position {
         x += d.dx;
         y += d.dy;
     }
+
+    @Override
+    public String toString () {
+        return "(" + x + "," + y + ")";
+    }
 }

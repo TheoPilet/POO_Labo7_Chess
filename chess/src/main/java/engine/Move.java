@@ -26,4 +26,9 @@ public class Move {
         this.to = to;
         this.secondMove = secondMove;
     }
+
+    @Override
+    public String toString () {
+        return pieceMoved.getType().name() + " : " + from + " -> " + to;
+    }
 }
