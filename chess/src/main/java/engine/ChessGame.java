@@ -7,7 +7,6 @@ import chess.ChessController;
 import chess.ChessView;
 import chess.PlayerColor;
 import engine.pieces.King;
-import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
 
@@ -33,10 +32,8 @@ public class ChessGame implements ChessController {
 
 	@Override
 	public boolean move(int fromX, int fromY, int toX, int toY) {
-		System.out.println(String.format("TO REMOVE : from (%d, %d) to (%d, %d)", fromX, fromY, toX, toY)); // TODO remove
 		Piece p = board[fromX][fromY];
 		if (p == null) return false; // no piece to move at the start position
-		if (p.getColor() != currentPlayerColor) return false;
 		if (p.getColor() != currentPlayerColor) return false;
 
 		Position from = new Position(fromX, fromY);
@@ -46,7 +43,6 @@ public class ChessGame implements ChessController {
 		if (move == null) return false;
 
 		applyMove(move);
-
 
 		if (!isStateValid()) {
 			revertLastMove();
@@ -58,13 +54,11 @@ public class ChessGame implements ChessController {
 		uppdateBoardView(move);
 
 		nextTurn();
-
-		nextTurn();
 		return true;
 	}
 
 	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
-		return p.availableMoves().stream().filter((Move m) -> m.to.equals(to)).findFirst().get();
+		return p.availableMoves().stream().filter((Move m) -> m.to.equals(to)).findFirst().orElse(null);
 	}
 
 	private void applyMove (Move m) {
@@ -120,6 +114,7 @@ public class ChessGame implements ChessController {
 	public void newGame() {
 		resetBoard();
 		board = ChessBoardInitializer.standardInitializedBoard(this);
+		currentPlayerColor = PlayerColor.WHITE;
 		updateBoardView();
 	}
 
