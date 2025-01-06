@@ -27,12 +27,13 @@ public class Pawn extends Piece{
         return PieceType.PAWN;
     }
 
-    private LinkedList<Move> eats(Position pos, Position from, int limit){
+
+    private LinkedList<Move> eats(Position pos, Position from){
         LinkedList<Move> moves = new LinkedList<>();
 
-        for(Direction dir : directionsToEat){
+        for(Direction dir : directionsToEat){ //only eats in diagonal
             if(!hasTheSameColor(chessGame.at(pos))){
-                moves.addAll(0, getMovesInDirection(dir, limit, from));
+                moves.addAll(0, getMovesInDirection(dir, ONE_SQUARE_LIMIT, from));
             }
         }
 
@@ -44,16 +45,16 @@ public class Pawn extends Piece{
         LinkedList<Move> availableMoves = new LinkedList<>();
 
         Position from = chessGame.where(this);
-        Position pos = new Position(from.x(), from.y()); //deep copy ou une connerie comme ça?
-
+        Position pos = from.copy();
 
         if(chessGame.hasMoved(this)){
-            availableMoves.addAll(0, eats(pos, from, ONE_SQUARE_LIMIT));
+            availableMoves.addAll(0, getMovesInDirection(directionToMove, ONE_SQUARE_LIMIT, from).stream().filter((Move m) -> m.pieceEaten == null).toList());
         } else {
-            availableMoves.addAll(0, eats(pos, from, TWO_SQUARES_LIMIT));
+            availableMoves.addAll(0, getMovesInDirection(directionToMove, TWO_SQUARES_LIMIT, from).stream().filter((Move m) -> m.pieceEaten == null).toList());
         }
 
-        availableMoves.addAll(0, getMovesInDirection(directionToMove, ONE_SQUARE_LIMIT, from).stream().filter((Move m) -> m.pieceEaten == null).toList());
+        //Moves where the pawn can eat
+        availableMoves.addAll(0, eats(pos, from));
         
         return availableMoves;
     }
