@@ -60,12 +60,7 @@ public class ChessGame implements ChessController {
 	}
 
 	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
-		for (Move m : p.availableMoves()) {
-			if (m.to.equals(to)) {
-				return m;
-			}
-		}
-		return null;
+		return p.availableMoves().stream().filter((Move m) -> m.to.equals(to)).findFirst().get();
 	}
 
 	private void applyMove (Move m) {
