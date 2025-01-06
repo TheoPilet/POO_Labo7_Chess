@@ -25,4 +25,9 @@ public class Position {
         x += d.dx;
         y += d.dy;
     }
+
+    public Position copy() {
+        return new Position(x, y);
+    }
+
 }
