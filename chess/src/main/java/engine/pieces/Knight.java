@@ -31,7 +31,7 @@ public class Knight extends Piece{
             new Direction(1, -2),
             new Direction(-1, -2)
         }) {
-            availableMoves.addAll(getMovesInDirection(dir, 1, from));
+            availableMoves.addAll(getMovesInDirection(dir, ONE_SQUARE_LIMIT, from));
         }
         
         return availableMoves;
