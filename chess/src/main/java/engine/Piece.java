@@ -11,6 +11,7 @@ public abstract class Piece {
 
     protected final int INFINITE_LIMIT = -1;
     protected final int ONE_SQUARE_LIMIT = 1;
+    protected final int TWO_SQUARES_LIMIT = 2;
 
     protected PlayerColor color;
     protected ChessGame chessGame;
@@ -25,13 +26,13 @@ public abstract class Piece {
     }
 
     protected boolean hasTheSameColor(Piece piece){
-        return piece.color == this.color;
+        return piece != null && piece.color == this.color;
     }
 
     public abstract PieceType getType();
 
     protected boolean isSquareAvailable(Position pos){
-        return hasTheSameColor(chessGame.at(pos)) || !chessGame.isOnBoard(pos);
+        return !hasTheSameColor(chessGame.at(pos)) || chessGame.isOnBoard(pos);
     }
 
     protected LinkedList<Move> getMovesInDirection(Direction d, int limit, Position from){
@@ -48,7 +49,7 @@ public abstract class Piece {
 
         for(int i = 0; canGoFurther; pos.next(d), i++){
         
-            if(i == limit || isSquareAvailable(pos)){
+            if(i == limit || !isSquareAvailable(pos)){
                 canGoFurther = false;
                 break;
             }
