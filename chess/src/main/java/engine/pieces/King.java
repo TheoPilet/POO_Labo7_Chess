@@ -32,7 +32,7 @@ public class King extends Piece {
         Position from = chessGame.where(this);
         
         for(Direction d : Direction.ALL_DIRECTIONS){
-            availableMoves.addAll(0, getMovesInDirection(d, ONE_MOVE_LIMIT, from));
+            availableMoves.addAll(0, getMovesInDirection(d, ONE_SQUARE_LIMIT, from));
         }
         
         return availableMoves;
