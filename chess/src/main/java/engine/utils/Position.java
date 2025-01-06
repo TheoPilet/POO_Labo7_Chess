@@ -1,6 +1,6 @@
 package engine.utils;
 
-public class Position {
+public class Position implements Cloneable {
     private int x;
     private int y;
 
