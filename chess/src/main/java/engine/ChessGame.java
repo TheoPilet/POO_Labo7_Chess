@@ -86,8 +86,8 @@ public class ChessGame implements ChessController {
 	}
 
 	private void nextTurn() {
-		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
 		System.out.println("Turn " + history.size() + " (" + currentPlayerColor.name() + " player) : " + history.getLast());
+		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
 	}
 
 	public boolean isThreatenend(Piece p) { // TODO: remove if not used
