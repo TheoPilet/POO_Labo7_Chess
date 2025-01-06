@@ -6,7 +6,11 @@ import java.util.LinkedList;
 import chess.ChessController;
 import chess.ChessView;
 import chess.PlayerColor;
+import engine.pieces.Bishop;
 import engine.pieces.King;
+import engine.pieces.Knight;
+import engine.pieces.Pawn;
+import engine.pieces.Queen;
 import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
@@ -136,11 +140,62 @@ public class ChessGame implements ChessController {
 		return board[p.x()][p.y()];
 	}
 
+	/**
+	 * Look for a piece on the board and returns it's location.
+	 * @param p the piece to look for
+	 * @return the position of the piece, and null if it isn't on the board
+	 */
+	public Position where(Piece p) {
+		for (int i = 0; i < WIDTH; ++i) {
+			for (int j = 0; j < HEIGHT; ++j) {
+				if (board[i][j] == p) return new Position(i, j);
+			}
+		}
+		return null;
+	}
+
 	public boolean isOnBoard (Position p) {
 		return p.x() >= 0 
 		&& p.x() < WIDTH 
 		&& p.y() >= 0
 		&& p.y() < HEIGHT;
+	}
+
+	private void initializeBoard () {
+	PlayerColor white = PlayerColor.WHITE;
+		PlayerColor black = PlayerColor.BLACK;
+
+		Rook r1 = new Rook(white, this);
+		Rook r2 = new Rook(white, this);
+		Rook br1 = new Rook(black, this);
+		Rook br2 = new Rook(black, this);
+
+		LinkedList<Piece> whitePieces = new LinkedList<>(Arrays.asList(
+			r1,
+			new Knight(white, this),
+			new Bishop(white, this),
+			new King(white, this, r1, r2),
+			new Queen(white, this),
+			new Bishop(white, this),
+			new Knight(white, this),
+			r2
+		));
+
+		LinkedList<Piece> blackPieces = new LinkedList<>(Arrays.asList(
+			br1,
+			new Knight(black, this),
+			new Bishop(black, this),
+			new King(black, this, br1, br2),
+			new Queen(black, this),
+			new Bishop(black, this),
+			new Knight(black, this),
+			br2
+		));
+
+		for (int x=0, y=0; x < WIDTH; ++x) board[x][y] = whitePieces.pop();
+		for (int x=0, y=1; x < WIDTH; ++x) board[x][y] = new Pawn(white, this);
+		for (int x=0, y=HEIGHT-1; x < WIDTH; ++x) board[x][y] = blackPieces.pop();
+		for (int x=0, y=HEIGHT-2; x < WIDTH; ++x) board[x][y] = new Pawn(black, this);
 	}
 
 	private void resetBoard() {
