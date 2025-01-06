@@ -7,7 +7,6 @@ import chess.ChessController;
 import chess.ChessView;
 import chess.PlayerColor;
 import engine.pieces.King;
-import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
 
@@ -61,13 +60,12 @@ public class ChessGame implements ChessController {
 	}
 
 	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
-		return new Move(p, new Rook(PlayerColor.WHITE, this), from, to); // test code
-		/*for (Move m : p.availableMoves()) {
-			if (m.from.equals(from) && m.to.equals(to)) {
+		for (Move m : p.availableMoves()) {
+			if (m.to.equals(to)) {
 				return m;
 			}
 		}
-		return null;*/
+		return null;
 	}
 
 	private void applyMove (Move m) {
