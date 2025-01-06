@@ -25,9 +25,6 @@ public class ChessGame implements ChessController {
 	private Piece blackKing;
 	private PlayerColor currentPlayerColor = PlayerColor.WHITE;
 
-	private PlayerColor currentPlayerColor = PlayerColor.WHITE;
-
-
 	@Override
 	public void start(ChessView view) {
 		this.view = view;
