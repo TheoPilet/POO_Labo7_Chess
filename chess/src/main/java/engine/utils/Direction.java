@@ -20,4 +20,5 @@ public enum Direction {
 
     public static final Direction[] STRAIGHT_DIRECTIONS = {UP, LEFT, DOWN, RIGHT};
     public static final Direction[] DIAGONAL_DIRECTIONS = {UP_LEFT, DOWN_LEFT, DOWN_RIGHT, UP_RIGHT};
+    public static final Direction[] ALL_DIRECTIONS = {UP, LEFT, DOWN, RIGHT, UP_LEFT, DOWN_LEFT, DOWN_RIGHT, UP_RIGHT};
 }

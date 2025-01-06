@@ -1,9 +1,14 @@
 package engine.pieces;
 
+import java.util.LinkedList;
+
 import chess.PieceType;
 import chess.PlayerColor;
 import engine.ChessGame;
+import engine.Move;
 import engine.Piece;
+import engine.utils.Direction;
+import engine.utils.Position;
 
 public class King extends Piece {
     
@@ -18,5 +23,18 @@ public class King extends Piece {
 
     public PieceType getType(){
         return PieceType.KING;
+    }
+
+    public LinkedList<Move> availableMoves(){
+
+        LinkedList<Move> availableMoves = new LinkedList<>();
+
+        Position from = chessGame.where(this);
+        
+        for(Direction d : Direction.ALL_DIRECTIONS){
+            availableMoves.addAll(0, getMovesInDirection(d, ONE_SQUARE_LIMIT, from));
+        }
+        
+        return availableMoves;
     }
 }

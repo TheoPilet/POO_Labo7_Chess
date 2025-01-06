@@ -7,8 +7,12 @@ import chess.PlayerColor;
 import engine.utils.*;
 
 public abstract class Piece {
-    private PlayerColor color;
-    private ChessGame chessGame;
+
+    protected final int INFINITE_LIMIT = -1;
+    protected final int ONE_SQUARE_LIMIT = 1;
+
+    protected PlayerColor color;
+    protected ChessGame chessGame;
 
     public Piece (PlayerColor color, ChessGame chessGame) {
         this.color=color;
@@ -35,7 +39,7 @@ public abstract class Piece {
         boolean canGoFurther = true;
 
         LinkedList<Move> moves = new LinkedList<>();
-        Position pos = new Position(0, 0);
+        Position pos = new Position(from.x(), from.y()); //deep copy ou une connerie comme ça?
 
         for(int i = 0; canGoFurther; pos.next(d), i++){
         
