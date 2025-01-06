@@ -7,12 +7,6 @@ import chess.ChessController;
 import chess.ChessView;
 import chess.PlayerColor;
 import engine.pieces.King;
-<<<<<<< HEAD
-import engine.pieces.Knight;
-import engine.pieces.Pawn;
-import engine.pieces.Queen;
-=======
->>>>>>> cd2d9dc (isThreatened implemented, board initialisation moved to another filed.)
 import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
@@ -163,49 +157,6 @@ public class ChessGame implements ChessController {
 		&& p.y() < HEIGHT;
 	}
 
-<<<<<<< HEAD
-	private void initializeBoard () {
-	PlayerColor white = PlayerColor.WHITE;
-		PlayerColor black = PlayerColor.BLACK;
-
-		Rook r1 = new Rook(white, this);
-		Rook r2 = new Rook(white, this);
-		Rook br1 = new Rook(black, this);
-		Rook br2 = new Rook(black, this);
-
-		whiteKing = new King(white, this, r1, r2);
-		blackKing = new King(black, this, br1, br2);
-
-		LinkedList<Piece> whitePieces = new LinkedList<>(Arrays.asList(
-			r1,
-			new Knight(white, this),
-			new Bishop(white, this),
-			whiteKing,
-			new Queen(white, this),
-			new Bishop(white, this),
-			new Knight(white, this),
-			r2
-		));
-
-		LinkedList<Piece> blackPieces = new LinkedList<>(Arrays.asList(
-			br1,
-			new Knight(black, this),
-			new Bishop(black, this),
-			blackKing,
-			new Queen(black, this),
-			new Bishop(black, this),
-			new Knight(black, this),
-			br2
-		));
-
-		for (int x=0, y=0; x < WIDTH; ++x) board[x][y] = whitePieces.pop();
-		for (int x=0, y=1; x < WIDTH; ++x) board[x][y] = new Pawn(white, this);
-		for (int x=0, y=HEIGHT-1; x < WIDTH; ++x) board[x][y] = blackPieces.pop();
-		for (int x=0, y=HEIGHT-2; x < WIDTH; ++x) board[x][y] = new Pawn(black, this);
-	}
-
-=======
->>>>>>> cd2d9dc (isThreatened implemented, board initialisation moved to another filed.)
 	private void resetBoard() {
 		for (int x=0; x < WIDTH; ++x) {
 			for (int y=0; y < HEIGHT; ++y) {
