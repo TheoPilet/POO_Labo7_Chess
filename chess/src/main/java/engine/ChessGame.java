@@ -7,6 +7,13 @@ import chess.ChessController;
 import chess.ChessView;
 import chess.PlayerColor;
 import engine.pieces.King;
+<<<<<<< HEAD
+import engine.pieces.Knight;
+import engine.pieces.Pawn;
+import engine.pieces.Queen;
+=======
+>>>>>>> cd2d9dc (isThreatened implemented, board initialisation moved to another filed.)
+import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
 
@@ -24,6 +31,8 @@ public class ChessGame implements ChessController {
 	private Piece blackKing;
 	private PlayerColor currentPlayerColor = PlayerColor.WHITE;
 
+	private PlayerColor currentPlayerColor = PlayerColor.WHITE;
+
 
 	@Override
 	public void start(ChessView view) {
@@ -37,6 +46,7 @@ public class ChessGame implements ChessController {
 		Piece p = board[fromX][fromY];
 		if (p == null) return false; // no piece to move at the start position
 		if (p.getColor() != currentPlayerColor) return false;
+		if (p.getColor() != currentPlayerColor) return false;
 
 		Position from = new Position(fromX, fromY);
 		Position to = new Position(toX, toY);
@@ -46,6 +56,7 @@ public class ChessGame implements ChessController {
 
 		applyMove(move);
 
+
 		if (!isStateValid()) {
 			revertLastMove();
 			return false;
@@ -54,6 +65,8 @@ public class ChessGame implements ChessController {
 		//TODO : check promotion
 
 		uppdateBoardView(move);
+
+		nextTurn();
 
 		nextTurn();
 		return true;
@@ -150,6 +163,8 @@ public class ChessGame implements ChessController {
 		&& p.y() < HEIGHT;
 	}
 
+=======
+>>>>>>> cd2d9dc (isThreatened implemented, board initialisation moved to another filed.)
 	private void resetBoard() {
 		for (int x=0; x < WIDTH; ++x) {
 			for (int y=0; y < HEIGHT; ++y) {
