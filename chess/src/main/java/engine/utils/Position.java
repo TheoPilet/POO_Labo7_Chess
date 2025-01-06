@@ -21,9 +21,10 @@ public class Position {
         return (x==p.x() && y==p.y());
     }
 
-    public void next(Direction d) {
+    public Position next(Direction d) {
         x += d.dx;
         y += d.dy;
+        return this;
     }
 
     public Position copy() {
