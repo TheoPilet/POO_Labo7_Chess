@@ -33,11 +33,7 @@ public class Knight extends Piece{
                         };
         
         for(Direction dir : directions){
-            Position pos = new Position(from.x(), from.y()); //deep copy ou une connerie comme ça?
-            pos.next(dir); //a faire plus joli
-            if(isSquareAvailable(pos)){
-                availableMoves.add(new Move(this, chessGame.at(pos), from, pos));
-            }
+            availableMoves.addAll(getMovesInDirection(dir, 1, from));
         }
         
         return availableMoves;

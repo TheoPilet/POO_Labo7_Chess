@@ -4,7 +4,8 @@ import java.util.LinkedList;
 
 import chess.PieceType;
 import chess.PlayerColor;
-import engine.utils.*;
+import engine.utils.Direction;
+import engine.utils.Position;
 
 public abstract class Piece {
 
@@ -43,7 +44,7 @@ public abstract class Piece {
         boolean canGoFurther = true;
 
         LinkedList<Move> moves = new LinkedList<>();
-        Position pos = new Position(from.x(), from.y()); //deep copy ou une connerie comme ça?
+        Position pos = from.copy();
 
         for(int i = 0; canGoFurther; pos.next(d), i++){
         
