@@ -23,11 +23,15 @@ public abstract class Piece {
         return color;
     }
 
-    private boolean hasTheSameColor(Piece piece){
+    protected boolean hasTheSameColor(Piece piece){
         return piece.color == this.color;
     }
 
     public abstract PieceType getType();
+
+    protected boolean isSquareAvailable(Position pos){
+        return hasTheSameColor(chessGame.at(pos)) || !chessGame.isOnBoard(pos);
+    }
 
     protected LinkedList<Move> getMovesInDirection(Direction d, int limit, Position from){
 
@@ -43,7 +47,7 @@ public abstract class Piece {
 
         for(int i = 0; canGoFurther; pos.next(d), i++){
         
-            if(i == limit || hasTheSameColor(chessGame.at(pos)) || !chessGame.isOnBoard(pos)){
+            if(i == limit || isSquareAvailable(pos)){
                 canGoFurther = false;
                 break;
             }
