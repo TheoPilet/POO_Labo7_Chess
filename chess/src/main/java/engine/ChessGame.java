@@ -7,12 +7,6 @@ import chess.ChessController;
 import chess.ChessView;
 import chess.PlayerColor;
 import engine.pieces.King;
-<<<<<<< HEAD
-import engine.pieces.Knight;
-import engine.pieces.Pawn;
-import engine.pieces.Queen;
-=======
->>>>>>> cd2d9dc (isThreatened implemented, board initialisation moved to another filed.)
 import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
@@ -163,8 +157,6 @@ public class ChessGame implements ChessController {
 		&& p.y() < HEIGHT;
 	}
 
-=======
->>>>>>> cd2d9dc (isThreatened implemented, board initialisation moved to another filed.)
 	private void resetBoard() {
 		for (int x=0; x < WIDTH; ++x) {
 			for (int y=0; y < HEIGHT; ++y) {
