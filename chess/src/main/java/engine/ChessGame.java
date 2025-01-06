@@ -49,6 +49,7 @@ public class ChessGame implements ChessController {
 
 		if (!isStateValid()) {
 			revertLastMove();
+			updateBoardView();
 			System.out.println("move reverted");
 			return false;
 		}
@@ -70,7 +71,7 @@ public class ChessGame implements ChessController {
 	}
 
 	private void applyMove (Move m) {
-		history.add(m);
+		history.push(m);
 		board[m.to.x()][m.to.y()] = m.pieceMoved;
 		board[m.from.x()][m.from.y()] = null;
 	}
@@ -79,10 +80,11 @@ public class ChessGame implements ChessController {
 		Move m = history.pop();
 		revertMove(m);
 	}
+	
 	private void revertMove(Move m) {
-		board[m.from.x()][m.from.y()] = board[m.to.x()][m.to.y()];
-		board[m.to.x()][m.to.y()] = m.pieceEaten;
 		if (m.secondMove != null) revertMove(m.secondMove);
+		board[m.from.x()][m.from.y()] = m.pieceMoved;
+		board[m.to.x()][m.to.y()] = m.pieceEaten;
 	}
 
 	private boolean isStateValid() {
@@ -99,6 +101,7 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean isThreatenend(Piece p) { // TODO: remove if not used
+		System.out.println("Is the " + currentPlayerColor + " " + currentPlayerKing() + "threatened ?");
 		System.out.println(Arrays.stream(board)
 		.flatMap(Arrays::stream)
 		.filter(piece -> piece != null)
@@ -180,6 +183,7 @@ public class ChessGame implements ChessController {
 		for (int x=0; x < WIDTH; ++x) {
 			for (int y=0; y < HEIGHT; ++y) {
 				Piece p = board[x][y];
+				view.removePiece(x, y);
 				if (p != null) view.putPiece(p.getType(), p.getColor(), x, y);
 			}
 		}
