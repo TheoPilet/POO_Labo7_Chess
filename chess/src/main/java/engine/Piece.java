@@ -9,7 +9,7 @@ import engine.utils.Position;
 
 public abstract class Piece {
 
-    protected final int INFINITE_LIMIT = -1;
+    protected final int INFINITE_LIMIT = Integer.MAX_VALUE;
     protected final int ONE_SQUARE_LIMIT = 1;
     protected final int TWO_SQUARES_LIMIT = 2;
 
@@ -25,15 +25,7 @@ public abstract class Piece {
         return color;
     }
 
-    protected boolean hasTheSameColor(Piece piece){
-        return piece != null && piece.color == this.color;
-    }
-
     public abstract PieceType getType();
-
-    protected boolean isSquareAvailable(Position pos){
-        return !hasTheSameColor(chessGame.at(pos)) || chessGame.isOnBoard(pos);
-    }
 
     protected LinkedList<Move> getMovesInDirection(Direction d, int limit, Position from){
 
@@ -42,21 +34,17 @@ public abstract class Piece {
         //2. a piece from our color blocks the way
         //3. we would go beyond the board
         //4. we eat a piece 
-        boolean canGoFurther = true;
 
         LinkedList<Move> moves = new LinkedList<>();
-        Position pos = from.copy();
+        Position pos = from.next(d);
 
-        for(int i = 0; canGoFurther; pos.next(d), i++){
-        
-            if(i == limit || !isSquareAvailable(pos)){
-                canGoFurther = false;
-                break;
-            }
-            if(!hasTheSameColor(chessGame.at(pos))){
-                canGoFurther = false;
-            }
-            moves.add(new Move(this, chessGame.at(pos), from, pos));
+        Piece content;
+        for(int i = 0; chessGame.isOnBoard(pos) && i < limit; i++, pos = pos.next(d)){
+            content = chessGame.at(pos);
+
+            if (content != null && content.color.equals(this.color)) break;
+            moves.add(new Move(this, content, from, pos));
+            if (content != null) break;
         }
         return moves;
     };

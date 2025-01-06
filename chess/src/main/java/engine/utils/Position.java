@@ -22,9 +22,7 @@ public class Position implements Cloneable {
     }
 
     public Position next(Direction d) {
-        x += d.dx;
-        y += d.dy;
-        return this;
+        return new Position(x + d.dx, y + d.dy);
     }
 
     @Override

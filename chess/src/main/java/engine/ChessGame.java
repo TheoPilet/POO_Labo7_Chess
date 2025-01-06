@@ -40,12 +40,16 @@ public class ChessGame implements ChessController {
 		Position to = new Position(toX, toY);
 
 		Move move = getMoveIfAllowed(p, from, to);
+		System.out.println("-> " + move);
 		if (move == null) return false;
 
 		applyMove(move);
 
+		System.out.println("move applied");
+
 		if (!isStateValid()) {
 			revertLastMove();
+			System.out.println("move reverted");
 			return false;
 		}
 
@@ -58,6 +62,10 @@ public class ChessGame implements ChessController {
 	}
 
 	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
+		System.out.println("------------");
+        for (Move m : p.availableMoves()) {
+            System.out.println(m);
+        }
 		return p.availableMoves().stream().filter((Move m) -> m.to.equals(to)).findFirst().orElse(null);
 	}
 
@@ -78,7 +86,7 @@ public class ChessGame implements ChessController {
 	}
 
 	private boolean isStateValid() {
-		return isThreatenend(currentPlayerKing());
+		return !isThreatenend(currentPlayerKing());
 	}
 
 	private Piece currentPlayerKing() {
@@ -91,6 +99,11 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean isThreatenend(Piece p) { // TODO: remove if not used
+		System.out.println(Arrays.stream(board)
+		.flatMap(Arrays::stream)
+		.filter(piece -> piece != null)
+		.flatMap(piece -> piece.availableMoves().stream())
+		.filter(m -> m.pieceEaten == p).findFirst().orElse(null));
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
@@ -99,6 +112,11 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean isThreatened(Position p) { // TODO: remove if not used
+		System.out.println(Arrays.stream(board)
+		.flatMap(Arrays::stream)
+		.filter(piece -> piece != null)
+		.flatMap(piece -> piece.availableMoves().stream())
+		.filter(m -> m.to.equals(p)).findFirst().orElse(null));
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)

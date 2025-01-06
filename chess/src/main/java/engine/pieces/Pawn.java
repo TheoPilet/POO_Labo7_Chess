@@ -17,12 +17,13 @@ public class Pawn extends Piece{
     
     public Pawn (PlayerColor color, ChessGame chessGame) {
         super(color, chessGame);
-        directionsToEat = this.color==PlayerColor.WHITE ? 
-            new Direction[]{Direction.UP_LEFT, Direction.UP_RIGHT} : 
+        directionsToEat = this.color==PlayerColor.WHITE ?
+            new Direction[]{Direction.UP_LEFT, Direction.UP_RIGHT} :
             new Direction[]{Direction.DOWN_LEFT, Direction.DOWN_RIGHT};
         directionToMove = this.color==PlayerColor.WHITE ? Direction.UP : Direction.DOWN;
     }
 
+    @Override
     public PieceType getType(){
         return PieceType.PAWN;
     }
@@ -32,14 +33,13 @@ public class Pawn extends Piece{
         LinkedList<Move> moves = new LinkedList<>();
 
         for(Direction dir : directionsToEat){ //only eats in diagonal
-            if(!hasTheSameColor(chessGame.at(pos))){
-                moves.addAll(0, getMovesInDirection(dir, ONE_SQUARE_LIMIT, from));
-            }
+                moves.addAll(0, getMovesInDirection(dir, ONE_SQUARE_LIMIT, from).stream().filter((Move m) -> m.pieceEaten != null).toList());
         }
 
         return moves;
     }
 
+    @Override
     public LinkedList<Move> availableMoves(){
 
         LinkedList<Move> availableMoves = new LinkedList<>();
