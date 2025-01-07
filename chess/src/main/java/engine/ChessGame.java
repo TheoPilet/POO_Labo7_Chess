@@ -3,6 +3,7 @@ package engine;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import chess.ChessController;
 import chess.ChessView;
@@ -48,20 +49,25 @@ public class ChessGame implements ChessController {
 		Move move = getMoveIfAllowed(p, from, to);
 		if (move == null) return false;
 
+		if (!tryMove(move)) return false;
+		
+		uppdateBoardView(move);
+		if (move.pieceMoved.canBePromotedAt(move.to)) promote(move.to);
+
+		nextTurn();
+
+		return true;
+	}
+
+	public boolean tryMove(Move move) {
 		history.push(move);
 		applyMove(move);
 
 		if (!isStateValid()) {
 			revertLastMove();
-			fillBoardView();
+			fillBoardView(); // necessary ?
 			return false;
 		}
-
-		uppdateBoardView(move);
-
-		if (move.pieceMoved.canBePromotedAt(move.to)) promote(move.to);
-
-		nextTurn();
 		return true;
 	}
 
@@ -112,7 +118,43 @@ public class ChessGame implements ChessController {
 	private void nextTurn() {
 		System.out.println("Turn " + history.size() + " (" + currentPlayerColor.name() + " player) : " + history.getLast());
 		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
-		if (isThreatenend(currentPlayerKing())) view.displayMessage("Check !");
+
+		boolean threatened = isThreatenend(currentPlayerKing()),
+				hasValidMove = currentPlayeHasValidMove();
+
+		if (threatened) {
+			if (hasValidMove) {
+				view.displayMessage("Check !");
+			} else {
+				view.displayMessage("Checkmate !");
+			}
+		} else if (!hasValidMove) {
+			view.displayMessage("PAT !");
+		}
+
+		//TODO: 
+		/*égalités par :
+		- Manque de matériel :
+			Roi contre roi
+			Roi et fou contre roi
+			Roi et cavalier contre roi
+			Roi et deux cavaliers contre roi (sauf si l'adversaire a encore des pions)
+		- Répétition de la position : Si la même position se répète trois fois avec le même joueur
+		au trait et les mêmes possibilités de mouvement, la partie peut être déclarée nulle.
+		- Règle des 50 coups : Si 50 coups consécutifs sont joués par chaque joueur sans qu'aucun 
+		pion ne soit déplacé et sans qu'aucune pièce ne soit capturée, la partie est déclarée nulle. (je propose d'ignorer celle là :/)
+
+		*/
+	}
+
+	private boolean currentPlayeHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
+		return anyOf((x, y) -> board[x][y].availableMoves().stream().anyMatch((Move m) -> {
+			if (tryMove(m)) {
+				revertMove(m); // si le move réussit, on l'efface et on retourne qu'il est réussi (true)
+				return true;
+			}
+			return false; // sinon, on retourne false
+		}));
 	}
 
 	public boolean isThreatenend(Piece p) {
@@ -216,5 +258,18 @@ public class ChessGame implements ChessController {
 			for (int y=0; y < HEIGHT; ++y)
 				if (board[x][y] != null)
 					action.accept(x, y);
+	}
+	/**
+	 * Iterate over all pieces on the board
+	 * @param predBiFunction a predicate taking the coordinates of each piece position
+	 * @return true if the predicate is true on one or more element, else false 
+	 */
+	public boolean anyOf(BiFunction<Integer, Integer, Boolean> predBiFunction) {
+		for (int x=0; x < WIDTH; ++x)
+			for (int y=0; y < HEIGHT; ++y)
+				if (board[x][y] != null)
+					if (predBiFunction.apply(x, y))
+						return true;
+		return false;
 	}
 }

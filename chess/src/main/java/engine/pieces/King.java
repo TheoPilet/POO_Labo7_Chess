@@ -45,16 +45,13 @@ public class King extends Piece {
                     Position pk = chessGame.where(this);
                     Position pr = chessGame.where(r);
                     // gets unitary direction toward the rook
-                    //Direction d = new Direction(Math.abs(pk.x - pr.x) / (pk.x - pr.y), 0);
                     Direction d = new Direction(Math.abs(pr.x - pk.x) / (pr.x - pk.x), 0);
 
                     Position p = pk.next(d);
                     System.out.println(d.dx);
 
-                    for (; chessGame.at(p) == null; p = p.next(d)) {
-                        // if the king and the rook haven't moved, the rook is on this trajectory
-                    }
-                    System.out.println("IN");
+                    // if the king and the rook haven't moved, the rook is on this trajectory
+                    for (; chessGame.at(p) == null; p = p.next(d))
                     
                     if (p.equals(pr)) {
                         availableMoves.add(new Move(this, null, from, from.next(d).next(d),
