@@ -7,7 +7,11 @@ import java.util.function.BiConsumer;
 import chess.ChessController;
 import chess.ChessView;
 import chess.PlayerColor;
+import engine.pieces.Bishop;
 import engine.pieces.King;
+import engine.pieces.Knight;
+import engine.pieces.Queen;
+import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
 
@@ -33,6 +37,7 @@ public class ChessGame implements ChessController {
 
 	@Override
 	public boolean move(int fromX, int fromY, int toX, int toY) {
+
 		Piece p = board[fromX][fromY];
 		if (p == null) return false; // no piece to move at the start position
 		if (p.getColor() != currentPlayerColor) return false;
@@ -52,12 +57,23 @@ public class ChessGame implements ChessController {
 			return false;
 		}
 
-		//TODO : check promotion
-
 		uppdateBoardView(move);
+
+		if (move.pieceMoved.canBePromotedAt(move.to)) promote(move.to);
 
 		nextTurn();
 		return true;
+	}
+
+	public void promote (Position p) {
+			Piece promoted = view.askUser("Promotion", "How do you want to promote your pawn ?",
+			new Piece[]{
+				new Bishop(currentPlayerColor, this),
+				new Knight(currentPlayerColor, this),
+				new Rook(currentPlayerColor, this),
+				new Queen(currentPlayerColor, this)});
+			board[p.x][p.y] = promoted;
+			view.putPiece(promoted.getType(), currentPlayerColor, p.x, p.y);
 	}
 
 	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
@@ -93,22 +109,15 @@ public class ChessGame implements ChessController {
 	private void nextTurn() {
 		System.out.println("Turn " + history.size() + " (" + currentPlayerColor.name() + " player) : " + history.getLast());
 		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
+		if (isThreatenend(currentPlayerKing())) view.displayMessage("Check !");
 	}
 
-	public boolean isThreatenend(Piece p) { // TODO: remove if not used
+	public boolean isThreatenend(Piece p) {
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
 			.flatMap(piece -> piece.availableMoves().stream())
 			.anyMatch(m -> m.pieceEaten == p);
-	}
-
-	public boolean isThreatened(Position p) { // TODO: remove if not used
-		return Arrays.stream(board)
-			.flatMap(Arrays::stream)
-			.filter(piece -> piece != null)
-			.flatMap(piece -> piece.availableMoves().stream())
-			.anyMatch(m -> m.to.equals(p));
 	}
 
 	public boolean hasMoved(Piece p) {
@@ -170,8 +179,9 @@ public class ChessGame implements ChessController {
 	}
 
 	private void uppdateBoardView(Move m) {
-		view.removePiece(m.from.x, m.from.y);
 		view.putPiece(m.pieceMoved.getType(), m.pieceMoved.getColor(), m.to.x, m.to.y);
+		view.removePiece(m.from.x, m.from.y);
+		if (m.secondMove != null) uppdateBoardView(m.secondMove);
 	}
 	
 	public void setWhiteKing(King whiteKing) {
@@ -185,6 +195,13 @@ public class ChessGame implements ChessController {
 	}
 	public int height() {
 		return HEIGHT;
+	}
+
+	/**
+	 * @return the last move played
+	 */
+	public Move lastMove () {
+		return history.peek();
 	}
 
 	/**

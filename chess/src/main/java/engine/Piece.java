@@ -2,12 +2,13 @@ package engine;
 
 import java.util.LinkedList;
 
+import chess.ChessView;
 import chess.PieceType;
 import chess.PlayerColor;
 import engine.utils.Direction;
 import engine.utils.Position;
 
-public abstract class Piece {
+public abstract class Piece implements ChessView.UserChoice {
 
     protected final int INFINITE_LIMIT = Integer.MAX_VALUE;
     protected final int ONE_SQUARE_LIMIT = 1;
@@ -46,5 +47,12 @@ public abstract class Piece {
         return moves;
     };
 
+    public boolean canBePromotedAt (Position p) { return false; }
+
     public abstract LinkedList<Move> availableMoves();
+
+    @Override
+    public String textValue() {
+        return getType().name();
+    }
 }

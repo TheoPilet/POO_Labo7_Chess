@@ -34,11 +34,23 @@ public class Pawn extends Piece{
         for(Direction dir : directionsToEat) //only eats in diagonal
             moves.addAll(0, getMovesInDirection(dir, ONE_SQUARE_LIMIT, from)
                 .stream().filter((Move m) -> m.pieceEaten != null).toList());
+
+        // prise en passant :
+        Move m = chessGame.lastMove();
+        if (m != null
+            && m.pieceMoved.getType().equals(this.getType())
+            && Math.abs(m.to.y - m.from.y) > 1) {
+            // if the other Pawn went forward two cases last turn, the way was
+            // free and we have not been able to eat something in that case
+            moves.add(new Move(this, null, from, m.to.next(directionToMove), 
+                new Move(m.pieceMoved, m.pieceMoved, m.to, m.to)));
+                // the second move is essentially the other piece eating itself
+        }
     }
 
     @Override
     public LinkedList<Move> availableMoves(){
-        
+
         Position from = chessGame.where(this);
         int forwardDistance = chessGame.hasMoved(this) ? ONE_SQUARE_LIMIT : TWO_SQUARES_LIMIT;
         LinkedList<Move> availableMoves = getMovesInDirection(directionToMove, forwardDistance, from)
@@ -50,4 +62,10 @@ public class Pawn extends Piece{
         
         return availableMoves;
     }
-}   
+
+    @Override
+    public boolean canBePromotedAt(Position p) {
+        return (this.color.equals(PlayerColor.WHITE) && p.y == (chessGame.height()-1))
+            || this.color.equals(PlayerColor.BLACK) && p.y == 0;
+    }
+}
