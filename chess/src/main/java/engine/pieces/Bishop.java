@@ -16,15 +16,16 @@ public class Bishop extends Piece {
         super(color, chessGame);
     }
 
+    @Override
     public PieceType getType(){
         return PieceType.BISHOP;
     }
 
+    @Override
     public LinkedList<Move> availableMoves(){
+        Position from = chessGame.where(this);
 
         LinkedList<Move> availableMoves = new LinkedList<>();
-
-        Position from = chessGame.where(this);
         
         for(Direction d : Direction.DIAGONAL_DIRECTIONS){
             availableMoves.addAll(0, getMovesInDirection(d, INFINITE_LIMIT, from));

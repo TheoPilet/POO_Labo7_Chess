@@ -21,10 +21,12 @@ public class King extends Piece {
         this.rook2 = rook2;
     }
 
+    @Override
     public PieceType getType(){
         return PieceType.KING;
     }
 
+    @Override
     public LinkedList<Move> availableMoves(){
 
         LinkedList<Move> availableMoves = new LinkedList<>();

@@ -2,6 +2,7 @@ package engine;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.function.BiConsumer;
 
 import chess.ChessController;
 import chess.ChessView;
@@ -18,7 +19,7 @@ public class ChessGame implements ChessController {
 	private final int HEIGHT = 8;
 	private Piece[][] board = new Piece[WIDTH][HEIGHT];
 
-	private LinkedList<Move> history = new LinkedList<>();
+	private final LinkedList<Move> history = new LinkedList<>();
 
 	private Piece whiteKing;
 	private Piece blackKing;
@@ -40,17 +41,14 @@ public class ChessGame implements ChessController {
 		Position to = new Position(toX, toY);
 
 		Move move = getMoveIfAllowed(p, from, to);
-		System.out.println("-> " + move);
 		if (move == null) return false;
 
+		history.push(move);
 		applyMove(move);
-
-		System.out.println("move applied");
 
 		if (!isStateValid()) {
 			revertLastMove();
-			updateBoardView();
-			System.out.println("move reverted");
+			fillBoardView();
 			return false;
 		}
 
@@ -63,28 +61,25 @@ public class ChessGame implements ChessController {
 	}
 
 	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
-		System.out.println("------------");
-        for (Move m : p.availableMoves()) {
-            System.out.println(m);
-        }
-		return p.availableMoves().stream().filter((Move m) -> m.to.equals(to)).findFirst().orElse(null);
+		return p.availableMoves().stream().filter(
+			(Move m) -> m.to.equals(to)).findFirst().orElse(null);
 	}
 
 	private void applyMove (Move m) {
-		history.push(m);
-		board[m.to.x()][m.to.y()] = m.pieceMoved;
-		board[m.from.x()][m.from.y()] = null;
+		board[m.to.x][m.to.y] = m.pieceMoved;
+		board[m.from.x][m.from.y] = null;
+		if (m.secondMove != null) applyMove(m.secondMove);
 	}
 
 	private void revertLastMove () {
 		Move m = history.pop();
 		revertMove(m);
 	}
-	
+
 	private void revertMove(Move m) {
 		if (m.secondMove != null) revertMove(m.secondMove);
-		board[m.from.x()][m.from.y()] = m.pieceMoved;
-		board[m.to.x()][m.to.y()] = m.pieceEaten;
+		board[m.from.x][m.from.y] = m.pieceMoved;
+		board[m.to.x][m.to.y] = m.pieceEaten;
 	}
 
 	private boolean isStateValid() {
@@ -101,12 +96,6 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean isThreatenend(Piece p) { // TODO: remove if not used
-		System.out.println("Is the " + currentPlayerColor + " " + currentPlayerKing() + "threatened ?");
-		System.out.println(Arrays.stream(board)
-		.flatMap(Arrays::stream)
-		.filter(piece -> piece != null)
-		.flatMap(piece -> piece.availableMoves().stream())
-		.filter(m -> m.pieceEaten == p).findFirst().orElse(null));
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
@@ -115,11 +104,6 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean isThreatened(Position p) { // TODO: remove if not used
-		System.out.println(Arrays.stream(board)
-		.flatMap(Arrays::stream)
-		.filter(piece -> piece != null)
-		.flatMap(piece -> piece.availableMoves().stream())
-		.filter(m -> m.to.equals(p)).findFirst().orElse(null));
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
@@ -136,7 +120,7 @@ public class ChessGame implements ChessController {
 		resetBoard();
 		board = ChessBoardInitializer.standardInitializedBoard(this);
 		currentPlayerColor = PlayerColor.WHITE;
-		updateBoardView();
+		fillBoardView();
 	}
 
 	/**
@@ -146,7 +130,7 @@ public class ChessGame implements ChessController {
 	 */
 	public Piece at(Position p) {
 		if (!isOnBoard(p)) return null;
-		return board[p.x()][p.y()];
+		return board[p.x][p.y];
 	}
 
 	/**
@@ -164,10 +148,10 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean isOnBoard (Position p) {
-		return p.x() >= 0 
-		&& p.x() < WIDTH 
-		&& p.y() >= 0
-		&& p.y() < HEIGHT;
+		return p.x >= 0 
+		&& p.x < WIDTH 
+		&& p.y >= 0
+		&& p.y < HEIGHT;
 	}
 
 	private void resetBoard() {
@@ -179,20 +163,15 @@ public class ChessGame implements ChessController {
 		}
 	}
 
-	private void updateBoardView() {
-		for (int x=0; x < WIDTH; ++x) {
-			for (int y=0; y < HEIGHT; ++y) {
-				Piece p = board[x][y];
-				view.removePiece(x, y);
-				if (p != null) view.putPiece(p.getType(), p.getColor(), x, y);
-			}
-		}
+	private void fillBoardView() {
+		this.foreach((x, y) -> {
+			Piece p = board[x][y];
+			if (p != null) view.putPiece(p.getType(), p.getColor(), x, y);});
 	}
 
 	private void uppdateBoardView(Move m) {
-		view.removePiece(m.from.x(), m.from.y());
-		if (m.pieceEaten != null) view.removePiece(m.to.x(), m.to.y()); // TODO: necessary ?
-		view.putPiece(m.pieceMoved.getType(), m.pieceMoved.getColor(), m.to.x(), m.to.y());
+		view.removePiece(m.from.x, m.from.y);
+		view.putPiece(m.pieceMoved.getType(), m.pieceMoved.getColor(), m.to.x, m.to.y);
 	}
 	
 	public void setWhiteKing(King whiteKing) {
@@ -206,5 +185,16 @@ public class ChessGame implements ChessController {
 	}
 	public int height() {
 		return HEIGHT;
+	}
+
+	/**
+	 * Iterate over all pieces on the board
+	 * @param action the action to perform on each piece position
+	 */
+	public void foreach(BiConsumer<Integer, Integer> action) {
+		for (int x=0; x < WIDTH; ++x)
+			for (int y=0; y < HEIGHT; ++y)
+				if (board[x][y] != null)
+					action.accept(x, y);
 	}
 }

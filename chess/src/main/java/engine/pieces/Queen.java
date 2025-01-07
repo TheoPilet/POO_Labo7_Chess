@@ -2,7 +2,6 @@ package engine.pieces;
 
 import java.util.LinkedList;
 
-
 import chess.PieceType;
 import chess.PlayerColor;
 import engine.ChessGame;
@@ -17,10 +16,12 @@ public class Queen extends Piece {
         super(color, chessGame);
     }
 
+    @Override
     public PieceType getType(){
         return PieceType.QUEEN;
     }
 
+    @Override
     public LinkedList<Move> availableMoves(){
 
         LinkedList<Move> availableMoves = new LinkedList<>();

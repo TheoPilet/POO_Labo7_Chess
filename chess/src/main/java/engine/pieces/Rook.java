@@ -15,10 +15,12 @@ public class Rook extends Piece{
         super(color, chessGame);
     }
 
+    @Override
     public PieceType getType(){
         return PieceType.ROOK;
     }
 
+    @Override
     public LinkedList<Move> availableMoves(){
 
         LinkedList<Move> availableMoves = new LinkedList<>();

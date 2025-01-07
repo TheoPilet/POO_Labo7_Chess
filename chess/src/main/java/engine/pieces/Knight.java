@@ -16,10 +16,12 @@ public class Knight extends Piece{
         super(color, chessGame);
     }
 
+    @Override
     public PieceType getType(){
         return PieceType.KNIGHT;
     }
 
+    @Override
     public LinkedList<Move> availableMoves(){
 
         LinkedList<Move> availableMoves = new LinkedList<>();
@@ -27,9 +29,13 @@ public class Knight extends Piece{
         
         for(Direction dir : new Direction[]{
             new Direction(1, 2),
-            new Direction(-1, 2),
             new Direction(1, -2),
-            new Direction(-1, -2)
+            new Direction(-1, 2),
+            new Direction(-1, -2),
+            new Direction(2, 1),
+            new Direction(2, -1),
+            new Direction(-2, 1),
+            new Direction(-2, -1)
         }) {
             availableMoves.addAll(getMovesInDirection(dir, ONE_SQUARE_LIMIT, from));
         }

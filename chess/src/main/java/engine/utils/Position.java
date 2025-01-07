@@ -1,24 +1,16 @@
 package engine.utils;
 
 public class Position implements Cloneable {
-    private int x;
-    private int y;
+    public final int x;
+    public final int y;
 
     public Position (int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public int x(){
-        return x;
-    }
-
-    public int y(){
-        return y;
-    }
-
     public boolean equals(Position p){
-        return (x==p.x() && y==p.y());
+        return (x==p.x && y==p.y);
     }
 
     public Position next(Direction d) {

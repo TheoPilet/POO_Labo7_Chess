@@ -33,18 +33,15 @@ public abstract class Piece {
         //1. we've reached the nb of case max we can reach (limit) -> limit = -1 if infinite
         //2. a piece from our color blocks the way
         //3. we would go beyond the board
-        //4. we eat a piece 
+        //4. we eat a piece
 
         LinkedList<Move> moves = new LinkedList<>();
         Position pos = from.next(d);
 
-        Piece content;
-        for(int i = 0; chessGame.isOnBoard(pos) && i < limit; i++, pos = pos.next(d)){
-            content = chessGame.at(pos);
-
-            if (content != null && content.color.equals(this.color)) break;
-            moves.add(new Move(this, content, from, pos));
-            if (content != null) break;
+        Piece content = null;
+        for(int i = 0; chessGame.isOnBoard(pos) && i < limit && content == null; i++, pos = pos.next(d)){
+            content = chessGame.at(pos); // updated once we enter the loop
+            if (content == null || !content.color.equals(this.color)) moves.add(new Move(this, content, from, pos));
         }
         return moves;
     };
