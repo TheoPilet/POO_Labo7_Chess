@@ -171,8 +171,12 @@ public class ChessGame implements ChessController {
 
 	@Override
 	public void newGame() {
+		newGame(ChessBoardInitializer.standardInitializedBoard(this));
+	}
+
+	public void newGame(Piece[][] board) {
 		resetBoard();
-		board = ChessBoardInitializer.standardInitializedBoard(this);
+		this.board = board;
 		currentPlayerColor = PlayerColor.WHITE;
 		fillBoardView();
 	}
