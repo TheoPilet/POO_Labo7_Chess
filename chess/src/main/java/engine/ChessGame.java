@@ -116,7 +116,7 @@ public class ChessGame implements ChessController {
 	}
 
 	private boolean isStateValid() {
-		return !isThreatenend(currentPlayerKing());
+		return !isThreatened(currentPlayerKing());
 	}
 
 	private Piece currentPlayerKing() {
@@ -165,27 +165,31 @@ public class ChessGame implements ChessController {
 		}));
 	}*/
 
-	public boolean isThreatenend(Piece p) {
-		if (p == null) {
-			System.out.println("No piece, no threat");
-			return false;
-		}
+	public boolean isThreatened(Piece p) {
 		System.out.println(Arrays.stream(board)
 		.flatMap(Arrays::stream)
 		.filter(piece -> piece != null)
+		.filter(piece -> !piece.color.equals(p.getColor()))
 		.flatMap(piece -> piece.availableMoves().stream())
 		.filter(m -> m.pieceEaten == p).findFirst().map((Move m) -> m.pieceMoved + " eats " + m.pieceEaten).orElse("King is not threatened"));
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
+			.filter(piece -> !piece.color.equals(p.getColor()))
 			.flatMap(piece -> piece.availableMoves().stream())
 			.anyMatch(m -> m.pieceEaten == p);
 	}
 
-	public boolean isThreatenend(Position p) {
+	/**
+	 * @param color of the player that would be threatened
+	 * @param p position that would be threatened
+	 * @return if the position is threatened by the other player
+	 */
+	public boolean isThreatened(PlayerColor color, Position p) {
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
+			.filter(piece -> !piece.color.equals(color))
 			.flatMap(piece -> piece.availableMoves().stream())
 			.anyMatch(m -> m.to.equals(p));
 	}

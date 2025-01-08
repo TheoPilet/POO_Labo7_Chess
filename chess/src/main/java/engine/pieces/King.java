@@ -51,7 +51,7 @@ public class King extends Piece {
                     //System.out.println(d.dx);
 
                     // if the king and the rook haven't moved, the rook is on this trajectory
-                    for (; chessGame.at(p) == null && !chessGame.isThreatenend(p); p = p.next(d))
+                    for (; chessGame.at(p) == null && !chessGame.isThreatened(this.getColor(), p); p = p.next(d))
 
                     if (p.equals(pr)) {
                         availableMoves.add(new Move(this, null, from, from.next(d).next(d),
