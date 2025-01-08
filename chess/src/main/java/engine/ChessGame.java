@@ -49,7 +49,9 @@ public class ChessGame implements ChessController {
 		Move move = getMoveIfAllowed(p, from, to);
 		if (move == null) return false;
 
-		if (!tryMove(move)) return false;
+		if (!tryMove(move)) {
+			System.out.println("Invalid move " + move);
+			return false;}
 		
 		uppdateBoardView(move);
 		if (move.pieceMoved.canBePromotedAt(move.to)) promote(move.to);
@@ -60,6 +62,12 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean tryMove(Move move) {
+		System.out.println("History:<");
+		for (Move m : history) {
+			System.out.println(m);
+		}
+		System.out.println("/>");
+
 		history.push(move);
 		applyMove(move);
 
@@ -119,8 +127,8 @@ public class ChessGame implements ChessController {
 		System.out.println("Turn " + history.size() + " (" + currentPlayerColor.name() + " player) : " + history.getLast());
 		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
 
-		boolean threatened = isThreatenend(currentPlayerKing()),
-				hasValidMove = currentPlayeHasValidMove();
+		/*boolean threatened = isThreatenend(currentPlayerKing()),
+				hasValidMove = currentPlayerHasValidMove();
 
 		if (threatened) {
 			if (hasValidMove) {
@@ -130,7 +138,7 @@ public class ChessGame implements ChessController {
 			}
 		} else if (!hasValidMove) {
 			view.displayMessage("PAT !");
-		}
+		}*/
 
 		//TODO: 
 		/*égalités par :
@@ -147,7 +155,7 @@ public class ChessGame implements ChessController {
 		*/
 	}
 
-	private boolean currentPlayeHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
+	/*private boolean currentPlayeHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
 		return anyOf((x, y) -> board[x][y].availableMoves().stream().anyMatch((Move m) -> {
 			if (tryMove(m)) {
 				revertMove(m); // si le move réussit, on l'efface et on retourne qu'il est réussi (true)
@@ -155,14 +163,31 @@ public class ChessGame implements ChessController {
 			}
 			return false; // sinon, on retourne false
 		}));
-	}
+	}*/
 
 	public boolean isThreatenend(Piece p) {
+		if (p == null) {
+			System.out.println("No piece, no threat");
+			return false;
+		}
+		System.out.println(Arrays.stream(board)
+		.flatMap(Arrays::stream)
+		.filter(piece -> piece != null)
+		.flatMap(piece -> piece.availableMoves().stream())
+		.filter(m -> m.pieceEaten == p).findFirst().map((Move m) -> m.pieceMoved + " eats " + m.pieceEaten).orElse("King is not threatened"));
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
 			.flatMap(piece -> piece.availableMoves().stream())
 			.anyMatch(m -> m.pieceEaten == p);
+	}
+
+	public boolean isThreatenend(Position p) {
+		return Arrays.stream(board)
+			.flatMap(Arrays::stream)
+			.filter(piece -> piece != null)
+			.flatMap(piece -> piece.availableMoves().stream())
+			.anyMatch(m -> m.to.equals(p));
 	}
 
 	public boolean hasMoved(Piece p) {

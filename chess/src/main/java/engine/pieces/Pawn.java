@@ -37,14 +37,17 @@ public class Pawn extends Piece{
 
         // prise en passant :
         Move m = chessGame.lastMove();
+
         if (m != null
-            && m.pieceMoved.getType().equals(this.getType())
-            && Math.abs(m.to.y - m.from.y) > 1) {
-            // if the other Pawn went forward two cases last turn, the way was
-            // free and we have not been able to eat something in that case
-            moves.add(new Move(this, null, from, m.to.next(directionToMove), 
-                new Move(m.pieceMoved, m.pieceMoved, m.to, m.to)));
-                // the second move is essentially the other piece eating itself
+            && Math.abs(m.to.x - from.x) == 1 && m.to.y == from.y   // the last moved piece is next to the pawn
+            && m.pieceMoved.getType().equals(this.getType())        // is also a pawn
+            && !m.pieceMoved.getColor().equals(this.getColor())     // is not of the same color
+            && Math.abs(m.to.y - m.from.y) > 1) {                   // and has moved two cases at once
+            // since the other pawn cannot jump over a piece, we have no conflicting eating move already stored in moves
+            Move move = new Move(this, null, from, m.to.next(directionToMove), 
+                new Move(m.pieceMoved, m.pieceMoved, m.to, m.to));
+            moves.add(move);
+            // the second move is essentially the other piece eating itself
         }
     }
 
