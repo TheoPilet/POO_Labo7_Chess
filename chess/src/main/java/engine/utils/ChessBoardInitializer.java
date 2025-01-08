@@ -36,8 +36,8 @@ public interface ChessBoardInitializer {
 			rook1,
 			new Knight(WHITE, cg),
 			new Bishop(WHITE, cg),
-			whiteKing,
 			new Queen(WHITE, cg),
+			whiteKing,
 			new Bishop(WHITE, cg),
 			new Knight(WHITE, cg),
 			rook2
@@ -47,8 +47,8 @@ public interface ChessBoardInitializer {
 			blackRook1,
 			new Knight(BLACK, cg),
 			new Bishop(BLACK, cg),
-			blackKing,
 			new Queen(BLACK, cg),
+			blackKing,
 			new Bishop(BLACK, cg),
 			new Knight(BLACK, cg),
 			blackRook2
