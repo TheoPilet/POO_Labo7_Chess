@@ -37,7 +37,7 @@ public interface ChessView {
    * pour représenter la valeur du choix proposé.
    */
   interface UserChoice {
-    String textValue();
+    String toString();
   }
 
   /**
