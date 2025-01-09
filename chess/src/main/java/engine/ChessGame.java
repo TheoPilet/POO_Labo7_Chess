@@ -62,12 +62,6 @@ public class ChessGame implements ChessController {
 	}
 
 	public boolean tryMove(Move move) {
-		System.out.println("History:<");
-		for (Move m : history) {
-			System.out.println(m);
-		}
-		System.out.println("/>");
-
 		history.push(move);
 		applyMove(move);
 
@@ -127,10 +121,19 @@ public class ChessGame implements ChessController {
 		System.out.println("Turn " + history.size() + " (" + currentPlayerColor.name() + " player) : " + history.getLast());
 		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
 
-		/*boolean threatened = isThreatenend(currentPlayerKing()),
-				hasValidMove = currentPlayerHasValidMove();
-
+		/*boolean threatened = isThreatened(currentPlayerKing());
 		if (threatened) {
+			view.displayMessage("Check !");
+		}*/
+		boolean hasValidMove = currentPlayerHasValidMove();
+		if (!hasValidMove) {
+			System.out.println("checkmated");
+			view.displayMessage("Checkmate !");
+		} else {
+			
+		}
+
+		/*if (threatened) {
 			if (hasValidMove) {
 				view.displayMessage("Check !");
 			} else {
@@ -140,7 +143,7 @@ public class ChessGame implements ChessController {
 			view.displayMessage("PAT !");
 		}*/
 
-		//TODO: 
+		//TODO:
 		/*égalités par :
 		- Manque de matériel :
 			Roi contre roi
@@ -155,23 +158,20 @@ public class ChessGame implements ChessController {
 		*/
 	}
 
-	/*private boolean currentPlayeHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
-		return anyOf((x, y) -> board[x][y].availableMoves().stream().anyMatch((Move m) -> {
+	private boolean currentPlayerHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
+		System.out.println("Before : " + history.size());
+		return anyOf((x, y) -> (!board[x][y].getColor().equals(currentPlayerColor)) || board[x][y].availableMoves().stream().anyMatch((Move m) -> {
 			if (tryMove(m)) {
-				revertMove(m); // si le move réussit, on l'efface et on retourne qu'il est réussi (true)
+				revertLastMove(); // si le move réussit, on l'efface et on retourne qu'il est réussi (true)
+				System.out.println("After : " + history.size());
 				return true;
 			}
+			System.out.println("After : " + history.size());
 			return false; // sinon, on retourne false
 		}));
-	}*/
+}
 
 	public boolean isThreatened(Piece p) {
-		System.out.println(Arrays.stream(board)
-		.flatMap(Arrays::stream)
-		.filter(piece -> piece != null)
-		.filter(piece -> !piece.color.equals(p.getColor()))
-		.flatMap(piece -> piece.availableMoves().stream())
-		.filter(m -> m.pieceEaten == p).findFirst().map((Move m) -> m.pieceMoved + " eats " + m.pieceEaten).orElse("King is not threatened"));
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
