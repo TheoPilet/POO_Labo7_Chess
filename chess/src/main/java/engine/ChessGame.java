@@ -47,10 +47,8 @@ public class ChessGame implements ChessController {
 		if (p == null) return false; // no piece to move at the start position
 		if (p.getColor() != currentPlayerColor) return false;
 
-		Position from = new Position(fromX, fromY);
 		Position to = new Position(toX, toY);
-
-		Move move = getMoveIfAllowed(p, from, to);
+		Move move = getMoveIfAllowed(p, to);
 		if (move == null) return false;
 
 		if (!tryMove(move)) {
@@ -65,7 +63,7 @@ public class ChessGame implements ChessController {
 		return true;
 	}
 
-	public boolean tryMove(Move move) {
+	private boolean tryMove(Move move) {
 		history.push(move);
 		applyMove(move);
 
@@ -77,7 +75,7 @@ public class ChessGame implements ChessController {
 		return true;
 	}
 
-	public void promote (Position p) {
+	private void promote (Position p) {
 			Piece promoted = view.askUser("Promotion", "How do you want to promote your pawn ?",
 			new Piece[]{
 				new Bishop(currentPlayerColor, this),
@@ -88,7 +86,7 @@ public class ChessGame implements ChessController {
 			view.putPiece(promoted.getType(), currentPlayerColor, p.x, p.y);
 	}
 
-	public Move getMoveIfAllowed(Piece p, Position from, Position to) {
+	private Move getMoveIfAllowed(Piece p, Position to) {
 		for (Move m : p.availableMoves()) {
 			System.out.println(m);
 		}
@@ -134,7 +132,7 @@ public class ChessGame implements ChessController {
 			System.out.println("checkmated");
 			view.displayMessage("Checkmate !");
 		} else {
-			
+
 		}
 
 		/*if (threatened) {
@@ -164,7 +162,7 @@ public class ChessGame implements ChessController {
 
 	private boolean currentPlayerHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
 		System.out.println("Before : " + history.size());
-		return anyOf((x, y) -> (!board[x][y].getColor().equals(currentPlayerColor)) || board[x][y].availableMoves().stream().anyMatch((Move m) -> {
+		return piecesPositions().stream().anyMatch(p -> (!board[p.x][p.y].getColor().equals(currentPlayerColor)) || board[x][y].availableMoves().stream().anyMatch((Move m) -> {
 			if (tryMove(m)) {
 				revertLastMove(); // si le move réussit, on l'efface et on retourne qu'il est réussi (true)
 				System.out.println("After : " + history.size());
@@ -296,17 +294,13 @@ public class ChessGame implements ChessController {
 				if (board[x][y] != null)
 					action.accept(x, y);
 	}
-	/**
-	 * Iterate over all pieces on the board
-	 * @param predBiFunction a predicate taking the coordinates of each piece position
-	 * @return true if the predicate is true on one or more element, else false 
-	 */
-	public boolean anyOf(BiFunction<Integer, Integer, Boolean> predBiFunction) {
+
+	public LinkedList<Position> piecesPositions() {
+		LinkedList<Position> piecesPositions = new LinkedList<>();
 		for (int x=0; x < WIDTH; ++x)
 			for (int y=0; y < HEIGHT; ++y)
 				if (board[x][y] != null)
-					if (predBiFunction.apply(x, y))
-						return true;
-		return false;
+					piecesPositions.add(new Position(x, y));
+		return piecesPositions;
 	}
 }
