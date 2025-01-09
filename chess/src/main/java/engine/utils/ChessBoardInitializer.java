@@ -13,12 +13,22 @@ import engine.pieces.Pawn;
 import engine.pieces.Queen;
 import engine.pieces.Rook;
 
+/**
+ * Defines the interface ChessBoardInitializer
+ * @author Bénédicte Vernet & Benoît Jaouen & Théo Pilet
+ */
 public interface ChessBoardInitializer {
+
     public final static int STANDARD_BOARD_WIDTH = 8;
     public final static int STANDARD_BOARD_HEIGHT = 8;
     final static PlayerColor WHITE = PlayerColor.WHITE;
 	final static PlayerColor BLACK = PlayerColor.BLACK;
 
+	/**
+	 * Initialize the board at the beginning of a game
+	 * @param cg the chess game we're playing with
+	 * @return all pieces that have been created
+	 */
     static public Piece[][] standardInitializedBoard (ChessGame cg) {
         if (cg.width() != STANDARD_BOARD_WIDTH || cg.height() != STANDARD_BOARD_HEIGHT)
             throw new IllegalArgumentException("ChessGame board has non standard width and/or height.");

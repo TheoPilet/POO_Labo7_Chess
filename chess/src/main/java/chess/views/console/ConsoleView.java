@@ -75,7 +75,7 @@ public class ConsoleView extends BaseView<String> {
     if (possibilities.length > 1) {
       int i = 0;
       for (T choice : possibilities) {
-        System.out.println(i + ". " + choice.textValue());
+        System.out.println(i + ". " + choice.toString());
         ++i;
       }
 

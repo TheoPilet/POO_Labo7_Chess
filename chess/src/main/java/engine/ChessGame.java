@@ -16,6 +16,10 @@ import engine.pieces.Rook;
 import engine.utils.ChessBoardInitializer;
 import engine.utils.Position;
 
+/**
+ * Defines the class ChessGame that implements the interface ChessController
+ * @author Bénédicte Vernet & Benoît Jaouen & Théo Pilet
+ */
 public class ChessGame implements ChessController {
 
 	private ChessView view;
