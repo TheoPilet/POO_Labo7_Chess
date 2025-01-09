@@ -48,6 +48,8 @@ L’état d’échec est vérifié via la méthode `isThreatened()` de `ChessGam
 - Elle parcourt toutes les pièces adverses et vérifie si l'une d'elles peut capturer le roi.
 - L’état d’échec est utilisé pour bloquer des mouvements illégaux dans `tryMove()` et pour détecter les situations de mat ou de pat.
 
+Actuellement, nous faisons un appel récursif de `isThreatened()` dans `availableMoves()` des deux rois et cela créé une loop infinie. Notre implementation ne fonctionne pas c'est pour cela que nous avons mises cette fonctionnalité en commentaires.
+
 ## Tests effectués
 
 ### Tests implémentés
@@ -84,6 +86,7 @@ Les tests suivants ont été realisé "à la main" à l'aide de l'interface grap
 3. **Vérifications d’état** :
    - Valider la détection correcte de l’échec et du mat.
    - Tester les situations de pat.
+   -> ne fonctionnent pas actuellement
 
 4. **Tests de bord** :
    - Scénarios où toutes les pièces d’un joueur sont bloquées.
