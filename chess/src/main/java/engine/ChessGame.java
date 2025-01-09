@@ -64,7 +64,6 @@ public class ChessGame implements ChessController {
 		if (move == null) return false;
 
 		if (!tryMove(move)) {
-			System.out.println("Invalid move " + move);
 			return false;
 		}
 		
@@ -116,9 +115,6 @@ public class ChessGame implements ChessController {
      * @return a valid Move object if allowed, null otherwise
      */
 	private Move getMoveIfAllowed(Piece p, Position to) {
-		for (Move m : p.availableMoves()) {
-			System.out.println(m);
-		}
 		return p.availableMoves().stream().filter(
 			(Move m) -> m.to.equals(to)).findFirst().orElse(null);
 	}
@@ -186,12 +182,12 @@ public class ChessGame implements ChessController {
 			return;
 		}
 
-		PlayerColor previousColor = currentPlayerColor;
+		//PlayerColor previousColor = currentPlayerColor;
 		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
 
 		// check, pat and checkmate detection
-		Move validMove = currentPlayerHasValidMove();
-		/*if (validMove == null) {
+		/*Move validMove = currentPlayerHasValidMove();
+		if (validMove == null) {
 			if (isThreatened(currentPlayerKing())) {
 				view.displayMessage("Checkmate !");
 				winner = previousColor;
@@ -205,7 +201,7 @@ public class ChessGame implements ChessController {
 		}*/
 	}
 
-	private Move currentPlayerHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
+	/*private Move currentPlayerHasValidMove() { //TODO: recursive call with Kings
 		return piecesPositions().stream().filter(																		// on ne prend que les pièces qui :
 			p -> board[p.x][p.y].getColor().equals(currentPlayerColor) &&												// sont de la couleur du joueur actuel
 			board[p.x][p.y].availableMoves().stream().anyMatch((Move move) -> {											// et ont dans leur availaible moves
@@ -216,7 +212,7 @@ public class ChessGame implements ChessController {
 				}
 				return false; // sinon, on retourne false
 			})).findAny().map((Position p) -> at(p).availableMoves().peek()).orElse(null);
-}
+	}*/
 
 	/**
      * Checks if a specified piece is threatened by any opposing piece.
