@@ -3,10 +3,10 @@ package engine;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 import chess.ChessController;
 import chess.ChessView;
+import chess.PieceType;
 import chess.PlayerColor;
 import engine.pieces.Bishop;
 import engine.pieces.King;
@@ -34,6 +34,9 @@ public class ChessGame implements ChessController {
 	private Piece blackKing;
 	private PlayerColor currentPlayerColor = PlayerColor.WHITE;
 
+	private PlayerColor winner = null;
+	private boolean draw = false;
+
 	@Override
 	public void start(ChessView view) {
 		this.view = view;
@@ -42,6 +45,7 @@ public class ChessGame implements ChessController {
 
 	@Override
 	public boolean move(int fromX, int fromY, int toX, int toY) {
+		if (winner != null && !draw) return false; // the game is over if a winner exists or if a draw is declared
 
 		Piece p = board[fromX][fromY];
 		if (p == null) return false; // no piece to move at the start position
@@ -53,7 +57,8 @@ public class ChessGame implements ChessController {
 
 		if (!tryMove(move)) {
 			System.out.println("Invalid move " + move);
-			return false;}
+			return false;
+		}
 		
 		uppdateBoardView(move);
 		if (move.pieceMoved.canBePromotedAt(move.to)) promote(move.to);
@@ -69,7 +74,7 @@ public class ChessGame implements ChessController {
 
 		if (!isStateValid()) {
 			revertLastMove();
-			fillBoardView(); // necessary ?
+			fillBoardView();
 			return false;
 		}
 		return true;
@@ -120,57 +125,51 @@ public class ChessGame implements ChessController {
 	}
 
 	private void nextTurn() {
-		System.out.println("Turn " + history.size() + " (" + currentPlayerColor.name() + " player) : " + history.getLast());
-		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
-
-		/*boolean threatened = isThreatened(currentPlayerKing());
-		if (threatened) {
-			view.displayMessage("Check !");
-		}*/
-		boolean hasValidMove = currentPlayerHasValidMove();
-		if (!hasValidMove) {
-			System.out.println("checkmated");
-			view.displayMessage("Checkmate !");
-		} else {
-
+		// draw detection according to https://en.wikipedia.org/wiki/Chess#Draw
+		LinkedList<Position> piecesPositions = piecesPositions();
+		if (																								// DRAW since insufficient material :
+			(piecesPositions.size() == 2) ||																	// 2 kings
+			(piecesPositions.size() <= 3 && piecesPositions.stream().anyMatch((Position p) ->
+				at(p).getType().equals(PieceType.KNIGHT) ||													// 2 kings and 1 knight
+				at(p).getType().equals(PieceType.BISHOP))) ||												// 2 kings and 1 bishop
+			(piecesPositions.size() == 4 && piecesPositions.stream().allMatch(
+				p -> at(p).getType().equals(PieceType.KNIGHT) || at(p).getType().equals(PieceType.KING)))	// 2 kings and only 2 knights
+		) {
+			draw = true;
+			view.displayMessage("Draw !");
+			return;
 		}
 
-		/*if (threatened) {
-			if (hasValidMove) {
-				view.displayMessage("Check !");
-			} else {
+		PlayerColor previousColor = currentPlayerColor;
+		currentPlayerColor = PlayerColor.values()[(currentPlayerColor.ordinal() + 1) % PlayerColor.values().length];
+
+		// check, pat and checkmate detection
+		Move validMove = currentPlayerHasValidMove();
+		/*if (validMove == null) {
+			if (isThreatened(currentPlayerKing())) {
 				view.displayMessage("Checkmate !");
+				winner = previousColor;
+			} else {
+				view.displayMessage("PAT !");
 			}
-		} else if (!hasValidMove) {
-			view.displayMessage("PAT !");
+		} else {
+			if (isThreatened(currentPlayerKing())) {
+				view.displayMessage("Check !");
+			}
 		}*/
-
-		//TODO:
-		/*égalités par :
-		- Manque de matériel :
-			Roi contre roi
-			Roi et fou contre roi
-			Roi et cavalier contre roi
-			Roi et deux cavaliers contre roi (sauf si l'adversaire a encore des pions)
-		- Répétition de la position : Si la même position se répète trois fois avec le même joueur
-		au trait et les mêmes possibilités de mouvement, la partie peut être déclarée nulle.
-		- Règle des 50 coups : Si 50 coups consécutifs sont joués par chaque joueur sans qu'aucun 
-		pion ne soit déplacé et sans qu'aucune pièce ne soit capturée, la partie est déclarée nulle. (je propose d'ignorer celle là :/)
-
-		*/
 	}
 
-	private boolean currentPlayerHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
-		System.out.println("Before : " + history.size());
-		return piecesPositions().stream().anyMatch(p -> (!board[p.x][p.y].getColor().equals(currentPlayerColor)) || board[x][y].availableMoves().stream().anyMatch((Move m) -> {
-			if (tryMove(m)) {
-				revertLastMove(); // si le move réussit, on l'efface et on retourne qu'il est réussi (true)
-				System.out.println("After : " + history.size());
-				return true;
-			}
-			System.out.println("After : " + history.size());
-			return false; // sinon, on retourne false
-		}));
+	private Move currentPlayerHasValidMove() { //TODO: cette fonction a l'air de ne pas fonctionner correctement :()
+		return piecesPositions().stream().filter(																		// on ne prend que les pièces qui :
+			p -> board[p.x][p.y].getColor().equals(currentPlayerColor) &&												// sont de la couleur du joueur actuel
+			board[p.x][p.y].availableMoves().stream().anyMatch((Move move) -> {											// et ont dans leur availaible moves
+				if (tryMove(move)) {																					// un move qui passe
+					revertLastMove(); // si le move réussit, on l'efface et on retourne qu'il est réussi (true)
+					System.out.println("Valid move : " + move);
+					return true;
+				}
+				return false; // sinon, on retourne false
+			})).findAny().map((Position p) -> at(p).availableMoves().peek()).orElse(null);
 }
 
 	public boolean isThreatened(Piece p) {
@@ -192,6 +191,7 @@ public class ChessGame implements ChessController {
 			.flatMap(Arrays::stream)
 			.filter(piece -> piece != null)
 			.filter(piece -> !piece.color.equals(color))
+			.filter(piece -> at(p) != piece)
 			.flatMap(piece -> piece.availableMoves().stream())
 			.anyMatch(m -> m.to.equals(p));
 	}
@@ -209,6 +209,8 @@ public class ChessGame implements ChessController {
 		resetBoard();
 		this.board = board;
 		currentPlayerColor = PlayerColor.WHITE;
+		winner = null;
+		draw = false;
 		fillBoardView();
 	}
 
