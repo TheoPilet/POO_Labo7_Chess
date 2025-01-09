@@ -43,6 +43,14 @@ public class ChessGame implements ChessController {
 		view.startView();
 	}
 
+	/**
+     * Attempts to move a piece from one position to another on the chessboard.
+     * @param fromX the x-coordinate of the starting position
+     * @param fromY the y-coordinate of the starting position
+     * @param toX the x-coordinate of the destination position
+     * @param toY the y-coordinate of the destination position
+     * @return true if the move is valid and successfully executed, false otherwise
+     */
 	@Override
 	public boolean move(int fromX, int fromY, int toX, int toY) {
 		if (winner != null && !draw) return false; // the game is over if a winner exists or if a draw is declared
@@ -68,6 +76,11 @@ public class ChessGame implements ChessController {
 		return true;
 	}
 
+	/**
+     * Validates and applies a move, checking if the resulting game state is valid.
+     * @param move the move to attempt
+     * @return  true if the move is valid, false otherwise
+     */
 	private boolean tryMove(Move move) {
 		history.push(move);
 		applyMove(move);
@@ -80,6 +93,10 @@ public class ChessGame implements ChessController {
 		return true;
 	}
 
+	/**
+     * Promotes a pawn to another piece as chosen by the player.
+     * @param p the position of the pawn to promote
+     */
 	private void promote (Position p) {
 			Piece promoted = view.askUser("Promotion", "How do you want to promote your pawn ?",
 			new Piece[]{
@@ -91,6 +108,13 @@ public class ChessGame implements ChessController {
 			view.putPiece(promoted.getType(), currentPlayerColor, p.x, p.y);
 	}
 
+	/**
+     * Retrieves a valid move for the specified piece and destination, if allowed.
+     * @param p the piece to move
+     * @param from the starting position of the piece
+     * @param to the destination position of the piece
+     * @return a valid Move object if allowed, null otherwise
+     */
 	private Move getMoveIfAllowed(Piece p, Position to) {
 		for (Move m : p.availableMoves()) {
 			System.out.println(m);
@@ -99,31 +123,53 @@ public class ChessGame implements ChessController {
 			(Move m) -> m.to.equals(to)).findFirst().orElse(null);
 	}
 
+	/**
+     * Applies a move to the board.
+     * @param m the move to apply
+     */
 	private void applyMove (Move m) {
 		board[m.to.x][m.to.y] = m.pieceMoved;
 		board[m.from.x][m.from.y] = null;
 		if (m.secondMove != null) applyMove(m.secondMove);
 	}
 
+	/**
+     * Reverts the last move made on the board.
+     */
 	private void revertLastMove () {
 		Move m = history.pop();
 		revertMove(m);
 	}
 
+	/**
+     * Reverts a specified move on the board.
+     * @param m the move to revert
+     */
 	private void revertMove(Move m) {
 		if (m.secondMove != null) revertMove(m.secondMove);
 		board[m.from.x][m.from.y] = m.pieceMoved;
 		board[m.to.x][m.to.y] = m.pieceEaten;
 	}
 
+	/**
+     * Checks if the current game state is valid, ensuring the current player's king is not in check.
+     * @return true if the state is valid, false otherwise
+     */
 	private boolean isStateValid() {
 		return !isThreatened(currentPlayerKing());
 	}
 
+	/**
+     * Retrieves the current player's king piece.
+     * @return the current player's king
+     */
 	private Piece currentPlayerKing() {
 		return (currentPlayerColor == PlayerColor.WHITE) ? whiteKing : blackKing;
 	}
 
+	/**
+     * Advances the turn to the next player.
+     */
 	private void nextTurn() {
 		// draw detection according to https://en.wikipedia.org/wiki/Chess#Draw
 		LinkedList<Position> piecesPositions = piecesPositions();
@@ -172,6 +218,11 @@ public class ChessGame implements ChessController {
 			})).findAny().map((Position p) -> at(p).availableMoves().peek()).orElse(null);
 }
 
+	/**
+     * Checks if a specified piece is threatened by any opposing piece.
+     * @param p the piece to check
+     * @return true if the piece is threatened, false otherwise
+     */
 	public boolean isThreatened(Piece p) {
 		return Arrays.stream(board)
 			.flatMap(Arrays::stream)
@@ -196,15 +247,27 @@ public class ChessGame implements ChessController {
 			.anyMatch(m -> m.to.equals(p));
 	}
 
+	/**
+	 * Checks if a specific piece has moved during the game.
+	 * @param p the piece to check
+	 * @return true if the piece has moved at least once, false otherwise
+	 */
 	public boolean hasMoved(Piece p) {
 		return history.stream().anyMatch(m -> m.pieceMoved == p);
 	}
 
+	/**
+     * Starts a new game with the default board setup.
+     */
 	@Override
 	public void newGame() {
 		newGame(ChessBoardInitializer.standardInitializedBoard(this));
 	}
 
+	/**
+     * Starts a new game with a specified board setup.
+     * @param board the initial board setup
+     */
 	public void newGame(Piece[][] board) {
 		resetBoard();
 		this.board = board;
@@ -238,6 +301,11 @@ public class ChessGame implements ChessController {
 		return null;
 	}
 
+	/**
+	 * Checks if a given position is within the bounds of the chessboard.
+	 * @param p the position to check
+	 * @return true if the position is on the board, false otherwise
+	 */
 	public boolean isOnBoard (Position p) {
 		return p.x >= 0 
 		&& p.x < WIDTH 
@@ -245,6 +313,9 @@ public class ChessGame implements ChessController {
 		&& p.y < HEIGHT;
 	}
 
+	/**
+     * Resets the chessboard, clearing all pieces.
+     */
 	private void resetBoard() {
 		for (int x=0; x < WIDTH; ++x) {
 			for (int y=0; y < HEIGHT; ++y) {
@@ -254,27 +325,51 @@ public class ChessGame implements ChessController {
 		}
 	}
 
+	/**
+     * Fills the board view with the current state of the chessboard.
+     */
 	private void fillBoardView() {
 		this.foreach((x, y) -> {
 			Piece p = board[x][y];
 			if (p != null) view.putPiece(p.getType(), p.getColor(), x, y);});
 	}
 
+	/**
+     * Updates the board view after a move is made.
+     * @param m the move that was made
+     */
 	private void uppdateBoardView(Move m) {
 		view.putPiece(m.pieceMoved.getType(), m.pieceMoved.getColor(), m.to.x, m.to.y);
 		view.removePiece(m.from.x, m.from.y);
 		if (m.secondMove != null) uppdateBoardView(m.secondMove);
 	}
 	
+	/**
+     * Sets the white king piece for this game.
+     * @param whiteKing the white king piece
+     */
 	public void setWhiteKing(King whiteKing) {
 		this.whiteKing = whiteKing;
 	}
+
+	/**
+     * Sets the black king piece for this game.
+     * @param blackKing the black king piece
+     */
 	public void setBlackKing(King blackKing) {
 		this.blackKing = blackKing;
 	}
+
+	/**
+     * @return the width of the chessboard
+     */
 	public int width() {
 		return WIDTH;
 	}
+
+	/**
+     * @return the height of the chessboard
+     */
 	public int height() {
 		return HEIGHT;
 	}
@@ -297,6 +392,10 @@ public class ChessGame implements ChessController {
 					action.accept(x, y);
 	}
 
+	/**
+	 * Retrieves the positions of all pieces currently on the board.
+	 * @return a LinkedList of Position objects representing the locations of all pieces on the board
+	 */
 	public LinkedList<Position> piecesPositions() {
 		LinkedList<Position> piecesPositions = new LinkedList<>();
 		for (int x=0; x < WIDTH; ++x)
