@@ -49,7 +49,7 @@ public class GUIView extends BaseView<ImageIcon> {
 
     @Override
     public String toString() {
-      return object.textValue();
+      return object.toString();
     }
   }
 

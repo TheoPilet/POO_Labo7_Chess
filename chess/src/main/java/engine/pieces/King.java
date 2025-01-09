@@ -10,20 +10,39 @@ import engine.Piece;
 import engine.utils.Direction;
 import engine.utils.Position;
 
+/**
+ * Defines the class King that inherits from Piece
+ * @author Bénédicte Vernet & Benoît Jaouen & Théo Pilet
+ */
 public class King extends Piece {
     
-    private Rook[] rooks;
+    private Rook[] rooks; // useful for big and little rocks
 
+    /**
+     * Creates a constructor of King
+     * @param color    the color of the piece
+     * @param chessGame     the chess game we're playing with
+     * @param rook1     the first rook of the same color
+     * @param rook2     the second rook of the same color
+     */
     public King (PlayerColor color, ChessGame chessGame, Rook rook1, Rook rook2) {
         super(color, chessGame);
         this.rooks = new Rook[] {rook1, rook2};
     }
 
+    /**
+     * Getter to know the type of the piece
+     * @return  the PieceType KING
+     */
     @Override
     public PieceType getType(){
         return PieceType.KING;
     }
 
+    /**
+     * Method that returns all the moves that the piece can do
+     * @return  a LinkedList of Moves 
+     */
     @Override
     public LinkedList<Move> availableMoves(){
 
