@@ -1,6 +1,6 @@
 # Rapport labo 07 : Chess Game
 
-*Bénédicte Vernet & Benoît Jaouen*
+*Bénédicte Vernet & Benoît Jaouen & Théo Pilet*
 
 ## Introduction
 
